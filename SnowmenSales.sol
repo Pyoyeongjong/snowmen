@@ -12,11 +12,24 @@ contract SnowmenSales is Ownable, ERC1155Holder {
     IERC20 public snowmenToken; // Snowmen ERC20 토큰의 인터페이스
     IERC1155 public snowmenGame; // Snowmen ERC1155 토큰(게임 아이템 등의 자산) 인터페이스
 
+    uint256 private constant TICKET_PRICE = 0.01 ether;
+    uint256 private constant TICKET_QUANTITY = 1;
+    uint256 private constant TICKET_ID = 340282366920938463463374607431768211456;
+
     mapping(uint256 => uint256) public tokenPrice;
-
-
     //이벤트: 블록체인 상에서 발생하는 특정 상황을 로그로 기록해 감지하도록 하는 "신호" 역
     event SetPrice(uint256 tokenId, uint256 price, uint256 timestamp);
+
+    event BuyItem(
+        address indexed buyer, // 나중에 인덱스를 통해 원하는 buyer를 빨리 찾기 위함
+        uint256 tokenId,
+        uint256 amount,
+        uint8 quantity,
+        uint256 timestamp
+    );
+
+    event BuyTicket(address indexed buyer, uint256 timestamp);
+    event Withdraw(address owner, uint256 amount);
     
     event onERC1155ReceivedExecuted(
         address operator,
@@ -59,6 +72,64 @@ contract SnowmenSales is Ownable, ERC1155Holder {
         return this.onERC1155Received.selector;
         // ERC1155 표준에 따라, 이 함수는 ERC1155 컨트랙트에게 정상 수신을 의미하는 함수 셀렉터를 반환해야 합니다.
         // 이 반환값으로 인해 ERC1155 컨트랙트는 토큰 전달이 성공적으로 처리되었음을 알 수 있습니다.
+    }
+
+    function buyItem(
+        uint256 tokenId,
+        uint256 amount,
+        uint8 quantity
+    ) external {
+        address buyer = msg.sender;
+        require(tokenPrice[tokenId] != 0, "price is not set yet");
+        require(amount >= tokenPrice[tokenId] * quantity, "amount not enough");
+        require(
+            snowmenGame.balanceOf(address(this), tokenId) >= quantity,
+            "balance is not enough"
+        );
+        require(snowmenToken.balanceOf(buyer) >= amount, "insufficient token");
+        require(
+            snowmenToken.allowance(buyer, address(this)) >= amount,
+            "insufficient token approval"
+        );
+        snowmenToken.safeTransferFrom(buyer, owner(), amount); //buyer가 owner()에게 amount만큼 토큰을 지불하겠다.
+        snowmenGame.safeTransferFrom(
+            address(this),
+            buyer,
+            tokenId,
+            quantity,
+            ""
+        );
+        emit BuyItem(buyer, tokenId, amount, quantity, block.timestamp);
+    }
+
+    function buyTicket() external payable {
+        require(msg.value >= TICKET_PRICE, "price not enough"); //msg.value = 유저가 함수에 보낸 matic 개수
+
+        // Ticker의 제한을 두고 싶지 않아서 새로 유저가 올 때마다 티켓을 민팅하도록 하겠다.
+        // 외부 컨트랙트 함수를 사용하는 것중 하나가 로우레벨 함수 콜인데 가스비 아낄 수 있는 장점
+
+        (bool success,) = address(snowmenGame).call(
+            abi.encodeWithSignature( // bytes type로 묶기
+                "mint(address,uint256,uint256)",
+                msg.sender,
+                TICKET_ID,
+                TICKET_QUANTITY
+            )
+        );
+        require(success, "mint failed");
+        emit BuyTicket(msg.sender, block.timestamp);
+    }
+
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+
+    function withdraw() external onlyOwner() {
+        uint256 amount = getBalance();
+        require(amount != 0, "insuffcient amount");
+        (bool success,) = msg.sender.call{value: amount}("");
+        require(success, "unable to withdraw matic");
+        emit Withdraw(msg.sender, amount);
     }
 
     function setPrice(uint256 tokenId, uint256 price) external onlyOwner{

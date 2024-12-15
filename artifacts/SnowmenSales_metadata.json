@@ -44,6 +44,73 @@
 				"type": "error"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					}
+				],
+				"name": "SafeERC20FailedOperation",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "buyer",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint8",
+						"name": "quantity",
+						"type": "uint8"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"name": "BuyItem",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "buyer",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"name": "BuyTicket",
+				"type": "event"
+			},
+			{
 				"anonymous": false,
 				"inputs": [
 					{
@@ -93,6 +160,25 @@
 					{
 						"indexed": false,
 						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "Withdraw",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
 						"name": "operator",
 						"type": "address"
 					},
@@ -117,6 +203,49 @@
 				],
 				"name": "onERC1155ReceivedExecuted",
 				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8",
+						"name": "quantity",
+						"type": "uint8"
+					}
+				],
+				"name": "buyItem",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "buyTicket",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getBalance",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
 			},
 			{
 				"inputs": [
@@ -310,6 +439,13 @@
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "withdraw",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 			}
 		],
 		"devdoc": {
@@ -322,6 +458,11 @@
 				"OwnableUnauthorizedAccount(address)": [
 					{
 						"details": "The caller account is not authorized to perform an operation."
+					}
+				],
+				"SafeERC20FailedOperation(address)": [
+					{
+						"details": "An operation with an ERC-20 token failed."
 					}
 				]
 			},
@@ -477,11 +618,11 @@
 			]
 		},
 		"SnowmenSales.sol": {
-			"keccak256": "0xcc55e33d213494b57af1328e72c03f1fde92c8f46655762e16af57b8ed525241",
+			"keccak256": "0xf866b6256b5d83b3842f39ea17d635cc14e0c8d30b1855d58458cecef7be3e36",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://0dac0b2e2b2715e070beff49ef97ef08baaeb19d9d3c939ddf5d62675db8c0d7",
-				"dweb:/ipfs/QmcyRqi92NQYudoCZZqCboXTePfLoZtcWaMNe5yxP6nPhQ"
+				"bzz-raw://03efb24ab295ae2abc5622a3001d83cd2521d4cf4b197b424f56db5fea624887",
+				"dweb:/ipfs/QmdP3tSGY4ju92iBVHFhn2QTG6ohNoA34DmBEoyfvA45Yh"
 			]
 		}
 	},
